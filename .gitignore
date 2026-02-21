@@ -32,6 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 
-## Properties
+# Security: Sensitive environment variables
 application-dev.properties
 .env
+properties.env
+*.env
