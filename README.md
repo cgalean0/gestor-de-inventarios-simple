@@ -1,0 +1,1 @@
+# gestor-de-inventarios-simple
