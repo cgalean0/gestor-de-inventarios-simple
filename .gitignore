@@ -1,21 +1,36 @@
-# Dependencias de Node.js
-# No se suben porque se instalan en el contenedor mediante el Dockerfile
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-# Variables de Entorno (SENSIBLE)
-# ¡NUNCA subas tus contraseñas a GitHub!
-.env
-properties-dev.env
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
 
-# Datos persistentes de Docker
-# Evita que se suban los datos reales de la base de datos si usas carpetas locales
-mysql_data/
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
 
-# Archivos del Sistema / IDEs
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
 .vscode/
-.idea/
-.DS_Store
-*.swp
+
+## Properties
+application-dev.properties
