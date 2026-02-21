@@ -34,3 +34,4 @@ build/
 
 ## Properties
 application-dev.properties
+.env
