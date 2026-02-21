@@ -12,6 +12,7 @@ import com.inventario.dtos.ProductCreationDTO;
 import com.inventario.dtos.ProductDTO;
 import com.inventario.dtos.ProductUpdateDTO;
 import com.inventario.dtos.StockDTO;
+import com.inventario.enums.MovementType;
 import com.inventario.exceptions.DuplicateSkuException;
 import com.inventario.exceptions.InsufficientStockException;
 import com.inventario.exceptions.ProductNotFoundException;
@@ -19,6 +20,8 @@ import com.inventario.mappers.ProductMapper;
 import com.inventario.model.Product;
 import com.inventario.repository.ProductRepository;
 import com.inventario.service.ProductService;
+import com.inventario.service.StockManagerService;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -26,10 +29,12 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final StockManagerService stockManagerService;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, StockManagerService stockManagerService) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
+        this.stockManagerService = stockManagerService;
     }
 
 
@@ -102,6 +107,25 @@ public class ProductServiceImpl implements ProductService {
             .orElseThrow(() -> new ProductNotFoundException("Product not found."));
         product.setDeleted(true);
         productRepository.saveAndFlush(product);
+    }
+
+    @Override
+    @Transactional
+    public void updateStock(Long id, Integer quantity, MovementType type, String reason){
+        Product product = productRepository.findActiveById(id)
+            .orElseThrow(() -> new ProductNotFoundException("Product not found."));
+
+        if (type == MovementType.SALIDA && product.getAmount() < quantity)
+            throw new InsufficientStockException("Insuficient stock.");
+
+        if (type == MovementType.SALIDA){
+            product.setAmount(product.getAmount() - quantity);
+        } else { //Is ENTRADA or AJUSTE
+            product.setAmount(product.getAmount() - quantity);
+        }
+
+        productRepository.save(product);
+        stockManagerService.recordMovement(product, quantity, type, reason);
     }
 
     /**

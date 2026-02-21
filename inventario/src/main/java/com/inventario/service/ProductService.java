@@ -11,6 +11,7 @@ import com.inventario.dtos.ProductCreationDTO;
 import com.inventario.dtos.ProductDTO;
 import com.inventario.dtos.ProductUpdateDTO;
 import com.inventario.dtos.StockDTO;
+import com.inventario.enums.MovementType;
 
 public interface ProductService {
     ProductDTO createProduct(ProductCreationDTO product);
@@ -19,6 +20,7 @@ public interface ProductService {
     ProductDTO getProductBySku(String sku);
     ProductDTO updateProduct(Long id, ProductUpdateDTO product);
     void deleteProduct(Long id);
+    void updateStock(Long id, Integer quantity, MovementType type, String reason)
 
     // Stock managment
     ProductDTO increaseStock(Long id, StockDTO entrance);
