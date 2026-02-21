@@ -1,0 +1,21 @@
+# Dependencias de Node.js
+# No se suben porque se instalan en el contenedor mediante el Dockerfile
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Variables de Entorno (SENSIBLE)
+# ¡NUNCA subas tus contraseñas a GitHub!
+.env
+properties-dev.env
+
+# Datos persistentes de Docker
+# Evita que se suban los datos reales de la base de datos si usas carpetas locales
+mysql_data/
+
+# Archivos del Sistema / IDEs
+.vscode/
+.idea/
+.DS_Store
+*.swp
