@@ -1,3 +1,36 @@
-## TODO: Implement this
-# Create a container for the database
-# Create a container for the app
+services:
+  db:
+    image: mariadb:latest
+    container_name: inventario-db
+    restart: always
+    environment:
+      - MARIADB_DATABASE=inventariodb
+      - MARIADB_USER=inventario_user
+      - MARIADB_PASSWORD=${DB_PASSWORD}
+      - MARIADB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  app:
+    build: ./inventario
+    container_name: inventario-app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/inventariodb?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: inventario_user
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: dev
+    restart: on-failure
+volumes:
+  mariadb_data:
