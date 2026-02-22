@@ -117,7 +117,7 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Invalid amount provided"),
             @ApiResponse(responseCode = "404", description = "Product not found")
     })
-    @PostMapping("/{id}/stock/entrance")
+    @PostMapping("/{id}/stock/increase")
     public ResponseEntity<ProductDTO> increaseStock(@PathVariable Long id, @RequestBody StockDTO entrance) {
         return ResponseEntity.ok(productService.increaseStock(id, entrance));
     }
@@ -128,7 +128,7 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Insufficient stock or invalid amount"),
             @ApiResponse(responseCode = "404", description = "Product not found")
     })
-    @PostMapping("/{id}/stock/exit")
+    @PostMapping("/{id}/stock/decrease")
     public ResponseEntity<ProductDTO> decreaseStock(@PathVariable Long id, @RequestBody StockDTO exit) {
         return ResponseEntity.ok(productService.decreaseStock(id, exit));
     }
