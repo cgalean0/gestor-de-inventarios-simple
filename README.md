@@ -57,58 +57,7 @@ El sistema utiliza variables de entorno (.env) para gestionar credenciales, sigu
 ### 4. Flujo de Transaccionalidad
 Para garantizar la integridad de los datos, el sistema sigue un flujo estrictamente transaccional. El siguiente diagrama describe cómo se coordina la actualización del stock con el registro automático en el historial de auditoría:
 
-sequenceDiagram
-
-autonumber
-
-participant  C  as  ProductController
-
-participant  PS  as  ProductServiceImpl
-
-participant  SMS  as  StockManagerServiceImpl
-
-participant  PR  as  ProductRepository
-
-participant  SMR  as  StockManagerRepository
-
-participant  DB  as  MariaDB  (Docker)
-
-  
-
-Note  over  C, DB: Transacción  de  Actualización  de  Stock
-
-  
-
-C->>PS: increaseStock(id, StockDTO)
-
-PS->>PR: findActiveById(id)
-
-PR-->>PS: Product  Entity
-
-alt  es  SALIDA  y  stock  insuficiente
-
-PS-->>C: throw  InsufficientStockException
-
-else  operación  válida
-
-PS->>PS: Calcular  nuevo  amount  (sumar/restar)
-
-PS->>PR: save(product)
-
-PR->>DB: UPDATE  products  SET  amount = ?
-
-PS->>SMS: recordMovement(product, cantidad, tipo, motivo)
-
-SMS->>SMR: save(stockEntry)
-
-SMR->>DB: INSERT  INTO  stock_manager  (...)
-
-SMS-->>PS: void
-
-PS-->>C: ProductDTO  (vía ProductMapper)
-
-end
-
+[![](https://mermaid.ink/img/pako:eNp9lN1u2kAQhV9ltVcgOdThJ4ClpiKGC6SSIJveVEjVdj0hq9i77njthqA8TB-gV32EvFjHfylJUbjB3v3mzJ4zCwcuTQTc4xn8yEFLmCuxQ5FsNaOPyK3RefIdsH5PBVolVSq0ZT4TGVujiXJpfaMtmjg-xa3DIzAELJSEZZLG_5PhqkJDa-T9SmixA3yXXwdHygGkJlPW4P6UcPBW-D18flXSK4FK0GNnTlWA3a2uyWtjgZkCkPkOoR7boNCZkFI9_9EsAjaTNhexehQvK1Xjtt4_u7xchx5TWiKIDKrNjoqcGptvbro1uA5LMvDYrdIRiaoCrvbLiNAWCM4arSYDttBW2cZRM8HYMiDrs8_L-YztWVb2oN5Zfkt2QVuouaYh6fkes3dofrJlCTVUdbTFg4TUKtMYgTijIFLAxmjx_CtWkXilVx_PF7HMY4FM51AYJhKTU8ydLE8EfkDIrMDu2zLynYkCOmlt7Xg_oP0y-C_r-WyzYA1BJhebVvsj-_Sv4I00XTOPIUiD0YrmmJC9tovDJF0AMkHTsCo1DksM5W6OulN1pdGerwqUcsf9K6g94_I6XAQb-trc1Nl_S-oLyDq9Xq976pBlhya4wqjoxHyacdNVYZ3i-bdoF1YiTaGNEnTEHb5DFXHPYg4OTwATUb7yQ4lsub0j91vu0WMk8H7Lt_qJauhH8NWYpC1Dk-_uuHcraN4Oz9NI2PZf4mUVqRugX2bPvelkWolw78AfuDea9iaji35_6F647mgymg4dvude3x33JuPz0aTvDs77oyeHP1ZN3d5kMHDHg9HYHZ8PB_3h8OkvFw56zg?type=png)](https://mermaid.live/edit#pako:eNp9lN1u2kAQhV9ltVcgOdThJ4ClpiKGC6SSIJveVEjVdj0hq9i77njthqA8TB-gV32EvFjHfylJUbjB3v3mzJ4zCwcuTQTc4xn8yEFLmCuxQ5FsNaOPyK3RefIdsH5PBVolVSq0ZT4TGVujiXJpfaMtmjg-xa3DIzAELJSEZZLG_5PhqkJDa-T9SmixA3yXXwdHygGkJlPW4P6UcPBW-D18flXSK4FK0GNnTlWA3a2uyWtjgZkCkPkOoR7boNCZkFI9_9EsAjaTNhexehQvK1Xjtt4_u7xchx5TWiKIDKrNjoqcGptvbro1uA5LMvDYrdIRiaoCrvbLiNAWCM4arSYDttBW2cZRM8HYMiDrs8_L-YztWVb2oN5Zfkt2QVuouaYh6fkes3dofrJlCTVUdbTFg4TUKtMYgTijIFLAxmjx_CtWkXilVx_PF7HMY4FM51AYJhKTU8ydLE8EfkDIrMDu2zLynYkCOmlt7Xg_oP0y-C_r-WyzYA1BJhebVvsj-_Sv4I00XTOPIUiD0YrmmJC9tovDJF0AMkHTsCo1DksM5W6OulN1pdGerwqUcsf9K6g94_I6XAQb-trc1Nl_S-oLyDq9Xq976pBlhya4wqjoxHyacdNVYZ3i-bdoF1YiTaGNEnTEHb5DFXHPYg4OTwATUb7yQ4lsub0j91vu0WMk8H7Lt_qJauhH8NWYpC1Dk-_uuHcraN4Oz9NI2PZf4mUVqRugX2bPvelkWolw78AfuDea9iaji35_6F647mgymg4dvude3x33JuPz0aTvDs77oyeHP1ZN3d5kMHDHg9HYHZ8PB_3h8OkvFw56zg)
 
 
 
