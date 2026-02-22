@@ -79,8 +79,8 @@ Para garantizar la integridad de los datos, el sistema sigue un flujo estrictame
 
     
     ```bash
-    git clone https://github.com/tu-usuario/inventario-simple-app.git
-    cd inventario-simple-app
+    git clone https://github.com/tu-usuario/gestor-de-inventarios-simple.git
+    cd gestor-de-inventarios-simple
     
     ```
     
@@ -114,7 +114,7 @@ Para garantizar la integridad de los datos, el sistema sigue un flujo estrictame
 
 ##  Autor
 
--   **cgalean0** - _Estudiante de Lic. en Ciencias de la Computación_ - [Tu GitHub](https://github.com/cgalean0)
+-   **cgalean0** - _Estudiante de Lic. en Ciencias de la Computación_ - [GitHub](https://github.com/cgalean0)
     
 
 ----------
