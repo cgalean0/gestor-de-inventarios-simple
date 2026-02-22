@@ -8,8 +8,8 @@ import com.inventario.model.Product;
 import com.inventario.model.StockManager;
 
 public interface StockManagerService {
-    void recordMovement(Product product, Integer amount, MovementType type, String reason);
+    void recordMovement(Product product, Integer amount, MovementType movementType, String reason);
     Page<StockManager> getAllHistory(Pageable pageable);
     Page<StockManager> getHistoryByProduct(Long productId, Pageable pageable);
-    Page<StockManager> getHistoryByType(MovementType type, Pageable pageable);
+    Page<StockManager> getHistoryByType(MovementType movementType, Pageable pageable);
 }

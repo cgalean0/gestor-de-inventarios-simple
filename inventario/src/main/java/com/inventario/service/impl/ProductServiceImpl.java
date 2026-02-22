@@ -111,21 +111,22 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void updateStock(Long id, Integer quantity, MovementType type, String reason){
+    public ProductDTO updateStock(Long id, Integer quantity, MovementType movementType, String reason){
         Product product = productRepository.findActiveById(id)
             .orElseThrow(() -> new ProductNotFoundException("Product not found."));
 
-        if (type == MovementType.SALIDA && product.getAmount() < quantity)
-            throw new InsufficientStockException("Insuficient stock.");
-
-        if (type == MovementType.SALIDA){
+        if (movementType == MovementType.SALIDA){
+            if (product.getAmount() < quantity) {
+                throw new InsufficientStockException("Insuficient stock.");
+            }
             product.setAmount(product.getAmount() - quantity);
         } else { //Is ENTRADA or AJUSTE
-            product.setAmount(product.getAmount() - quantity);
+            product.setAmount(product.getAmount() + quantity);
         }
 
-        productRepository.save(product);
-        stockManagerService.recordMovement(product, quantity, type, reason);
+        Product savedProduct = productRepository.save(product);
+        stockManagerService.recordMovement(savedProduct, quantity, movementType, reason);
+        return productMapper.toDTO(savedProduct);
     }
 
     /**
@@ -137,31 +138,20 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public ProductDTO increaseStock(Long id, StockDTO entrance) {
-        if (id == null)
-            throw new IllegalArgumentException("The id is null.");
-        if (!(entrance.getAmount() > 0))
-            throw new IllegalArgumentException("The stock cannot be negative or zero.");
-        Product product = productRepository.findActiveById(id)
-            .orElseThrow(() -> new ProductNotFoundException("Product not found"));
-        product.setAmount(product.getAmount() + entrance.getAmount());
-        return productMapper.toDTO(productRepository.save(product));
+        validateStockDTO(entrance);
+        return updateStock(id, entrance.getAmount(), MovementType.ENTRADA, entrance.getMotive());
     }
 
     @Override
     @Transactional
     public ProductDTO decreaseStock(Long id, StockDTO exit) {
-        if (id == null)
-            throw new IllegalArgumentException("The id is null.");
-        if (!(exit.getAmount() > 0))
+        validateStockDTO(exit);
+        return updateStock(id, exit.getAmount(), MovementType.SALIDA, exit.getMotive());
+    }
+
+    private void validateStockDTO(StockDTO dto) {
+        if (dto.getAmount() <= 0 || dto == null)
             throw new IllegalArgumentException("The stock cannot be negative or zero.");
-
-        Product product = productRepository.findActiveById(id)
-            .orElseThrow(() -> new ProductNotFoundException("Product not found"));
-        if (product.getAmount() < exit.getAmount())
-            throw new InsufficientStockException("The stock is insuficient.");
-
-        product.setAmount(product.getAmount() - exit.getAmount());
-        return productMapper.toDTO(productRepository.save(product));
     }
 
     /**

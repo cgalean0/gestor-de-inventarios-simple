@@ -20,12 +20,12 @@ public class StockManagerServiceImpl implements StockManagerService{
     }
 
     @Override
-    public void recordMovement(Product product, Integer amount, MovementType type, String reason) {
+    public void recordMovement(Product product, Integer amount, MovementType movementType, String reason) {
         StockManager entry = new StockManager();
         entry.setProduct(product);
         entry.setAmount(amount);
         entry.setReason(reason);
-        entry.setMovementType(type);
+        entry.setMovementType(movementType);
 
         stockManagerRepository.save(entry);
     }
@@ -53,7 +53,7 @@ public class StockManagerServiceImpl implements StockManagerService{
             throw new IllegalArgumentException("Type cannot be null.");
         if (pageable == null)
             throw new IllegalArgumentException("Pageable cannot be null.");
-        return stockManagerRepository.getHistoryByType(type, pageable);
+        return stockManagerRepository.getHistoryByMovementType(type, pageable);
     }
 
 }

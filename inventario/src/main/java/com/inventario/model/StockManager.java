@@ -41,6 +41,7 @@ public class StockManager {
     
     @NotNull(message = "The StockType cannot be null")
     @Enumerated(EnumType.STRING)
+    @Column(name = "movement_type")
     private MovementType movementType;
 
     @NotNull(message = "The StockType cannot be null")

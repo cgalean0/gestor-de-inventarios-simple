@@ -20,7 +20,7 @@ public interface ProductService {
     ProductDTO getProductBySku(String sku);
     ProductDTO updateProduct(Long id, ProductUpdateDTO product);
     void deleteProduct(Long id);
-    void updateStock(Long id, Integer quantity, MovementType type, String reason)
+    ProductDTO updateStock(Long id, Integer quantity, MovementType movementType, String reason);
 
     // Stock managment
     ProductDTO increaseStock(Long id, StockDTO entrance);

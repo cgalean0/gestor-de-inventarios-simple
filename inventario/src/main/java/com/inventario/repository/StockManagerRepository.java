@@ -9,5 +9,5 @@ import com.inventario.model.StockManager;
 
 public interface StockManagerRepository extends JpaRepository<StockManager, Long>{
     Page<StockManager> findByProductIdOrderByCreatedAtDesc(Long productId, Pageable pageable);
-    Page<StockManager> getHistoryByType(MovementType type, Pageable pageable);
+    Page<StockManager> getHistoryByMovementType(MovementType movementType, Pageable pageable);
 }
