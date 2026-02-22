@@ -1,5 +1,6 @@
 package com.inventario.dtos;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import com.inventario.enums.Category;
@@ -11,7 +12,8 @@ import lombok.Setter;
 
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class ProductDTO {
+public class ProductDTO implements Serializable{
+    private static final long serialVersionUID = 1L;
     private Long id;
     private String name;
     private String description;

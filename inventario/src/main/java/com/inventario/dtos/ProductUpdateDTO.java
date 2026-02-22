@@ -1,5 +1,6 @@
 package com.inventario.dtos;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import com.inventario.enums.Category;
@@ -18,7 +19,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductUpdateDTO {
+public class ProductUpdateDTO implements Serializable{
+    private static final long serialVersionUID = 1L;
     @NotBlank(message = "Name cannot be blank.")
     @NotNull(message = "The name of product is required.")
     @Schema(example = "Coca-cola", description = "The name is required")

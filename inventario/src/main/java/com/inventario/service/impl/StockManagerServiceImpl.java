@@ -1,5 +1,7 @@
 package com.inventario.service.impl;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class StockManagerServiceImpl implements StockManagerService{
     }
 
     @Override
+    @CacheEvict(value = "stockHistory", key = "#product.id")
     public void recordMovement(Product product, Integer amount, MovementType movementType, String reason) {
         StockManager entry = new StockManager();
         entry.setProduct(product);
@@ -39,6 +42,9 @@ public class StockManagerServiceImpl implements StockManagerService{
     }
 
     @Override
+    @Cacheable(value = "stockHistory", 
+        key = "#productId", 
+        unless = "#result == null || #result.content.isEmpty()")
     public Page<StockManager> getHistoryByProduct(Long productId, Pageable pageable) {
         if (productId == null) 
             throw new IllegalArgumentException("The productId cannot be null.");

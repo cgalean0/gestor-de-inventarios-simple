@@ -1,5 +1,6 @@
 package com.inventario.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.inventario.enums.MovementType;
@@ -25,8 +26,7 @@ import lombok.Setter;
 @Table(name = "stock_manager")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-public class StockManager {
-
+public class StockManager{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

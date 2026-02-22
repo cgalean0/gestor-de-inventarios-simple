@@ -151,7 +151,7 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Invalid range (e.g., min > max)")
     })
     @GetMapping("/search/price")
-    public ResponseEntity<Page<ProductDTO>> getProductByName(
+    public ResponseEntity<Page<ProductDTO>> getProductByPriceRange(
             @RequestParam BigDecimal minPrice,
             @RequestParam BigDecimal maxPrice,
             Pageable pageable) {

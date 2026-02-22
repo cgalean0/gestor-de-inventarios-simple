@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -31,12 +34,12 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final StockManagerService stockManagerService;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, StockManagerService stockManagerService) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper,
+            StockManagerService stockManagerService) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.stockManagerService = stockManagerService;
     }
-
 
     /**
      * ################
@@ -59,14 +62,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "products", 
+            key = "'' + #pageable.pageNumber + '-' + #pageable.pageSize + #pageable.sort.toString()",
+            unless = "#result == null || #result.content.isEmpty()")
     public Page<ProductDTO> getProducts(Pageable pageable) {
         if (pageable == null)
             throw new IllegalArgumentException("Pageable cannot be null");
         return productRepository.findAllActive(pageable)
-            .map(productMapper::toDTO);
+                .map(productMapper::toDTO);
     }
 
     @Override
+    @Cacheable(value = "products", 
+            key = "#id",
+            unless = "#result == null")
     public ProductDTO getProductById(Long id) {
         if (id == null)
             throw new IllegalArgumentException("Id is null");
@@ -76,16 +85,23 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "products", 
+            key = "#sku",
+            unless = "#result == null")
     public ProductDTO getProductBySku(String sku) {
         if (sku == null)
             throw new IllegalArgumentException("sku is null");
         return productRepository.findOptionalBySkuAndDeletedFalse(sku)
-            .map(productMapper::toDTO)
-            .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+                .map(productMapper::toDTO)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
     }
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "products", key = "#id"),
+            @CacheEvict(value = "productLists", allEntries = true)
+    })
     public ProductDTO updateProduct(Long id, ProductUpdateDTO product) {
         if (id == null)
             throw new IllegalArgumentException("The id is null.");
@@ -99,28 +115,36 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "products", key = "#id"),
+            @CacheEvict(value = "productLists", allEntries = true)
+    })
     public void deleteProduct(Long id) {
         if (id == null)
             throw new IllegalArgumentException("The id is null.");
         Product product = productRepository.findActiveById(id)
-            .filter(p -> !p.isDeleted())
-            .orElseThrow(() -> new ProductNotFoundException("Product not found."));
+                .filter(p -> !p.isDeleted())
+                .orElseThrow(() -> new ProductNotFoundException("Product not found."));
         product.setDeleted(true);
         productRepository.saveAndFlush(product);
     }
 
     @Override
     @Transactional
-    public ProductDTO updateStock(Long id, Integer quantity, MovementType movementType, String reason){
+    @Caching(evict = {
+            @CacheEvict(value = "products", key = "#id"),
+            @CacheEvict(value = "productLists", allEntries = true)
+    })
+    public ProductDTO updateStock(Long id, Integer quantity, MovementType movementType, String reason) {
         Product product = productRepository.findActiveById(id)
-            .orElseThrow(() -> new ProductNotFoundException("Product not found."));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found."));
 
-        if (movementType == MovementType.SALIDA){
+        if (movementType == MovementType.SALIDA) {
             if (product.getAmount() < quantity) {
                 throw new InsufficientStockException("Insuficient stock.");
             }
             product.setAmount(product.getAmount() - quantity);
-        } else { //Is ENTRADA or AJUSTE
+        } else { // Is ENTRADA or AJUSTE
             product.setAmount(product.getAmount() + quantity);
         }
 
@@ -165,7 +189,7 @@ public class ProductServiceImpl implements ProductService {
         if (name.isBlank() || name == null)
             throw new IllegalArgumentException("The name cannot be Blank or Null.");
         return productRepository.findByNameContainingIgnoreCaseAndDeletedFalse(name, pageable)
-            .map(productMapper::toDTO);
+                .map(productMapper::toDTO);
     }
 
     @Override
@@ -177,7 +201,7 @@ public class ProductServiceImpl implements ProductService {
             throw new IllegalArgumentException("The min value cannot be major that max");
 
         return productRepository.findByPriceBetweenAndDeletedFalse(min, max, pageable)
-            .map(productMapper::toDTO);
+                .map(productMapper::toDTO);
     }
 
     @Override
