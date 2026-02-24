@@ -47,7 +47,6 @@ public class ProductCreationDTO implements Serializable{
     @Schema(example = "AAA-0000", description = "Unique SKU")
     private String sku;
 
-    @NotBlank(message = "Category cannot be blank.")
     @NotNull(message = "The Category of product is required.")
     @Schema(example = "FRUTAS_Y_VERDURAS", description = "The Category of these products")
     private Category category;
